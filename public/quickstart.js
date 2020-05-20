@@ -8,7 +8,7 @@
   var device;
 
   log('Requesting Capability Token...');
-  $.getJSON('https://abundant-team-2743.twil.io/capability-token')
+  $.getJSON('https://aqua-porpoise-9733.twil.io/capability-token')
     .then(function (data) {
       log('Got a token.');
       console.log('Token: ' + data.token);
@@ -42,7 +42,7 @@
 
       device.on('incoming', function (conn) {
         log('Incoming connection from ' + conn.parameters.From);
-        var archEnemyPhoneNumber = '+12093373517';
+        var archEnemyPhoneNumber = '+18138198072';
 
         if (conn.parameters.From === archEnemyPhoneNumber) {
           conn.reject();

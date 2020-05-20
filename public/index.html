@@ -6,7 +6,7 @@
 </head>
 
 <body>
-  <video src="/filthy.mp4" id="videoStream" preload="auto" controls playsinline loop height=200></video>
+  <video id="videoStream" controls playsinline height=200></video>
   <div id="controls">
     <div id="info">
       <p class="instructions">Twilio Client</p>
@@ -35,11 +35,43 @@
   </div>
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/hls.js"></script>
   <script type="text/javascript" src="/twilio-client.1.6.1.custom.js"></script>
   <script type="text/javascript" src="quickstart.js"></script>
+  <script>
+    var video = document.getElementById('videoStream');
+    var videoSrc = 'https://s3.amazonaws.com/cnn-assets/app-assets/cnn-lite/liteaudio.m3u8';
+    if (Hls.isSupported()) {
+      var hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.play();
+      });
+    }
+    // hls.js is not supported on platforms that do not have Media Source
+    // Extensions (MSE) enabled.
+    //
+    // When the browser has built-in HLS support (check using `canPlayType`),
+    // we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video
+    // element through the `src` property. This is using the built-in support
+    // of the plain video element, without using hls.js.
+    //
+    // Note: it would be more normal to wait on the 'canplay' event below however
+    // on Safari (where you are most likely to find built-in HLS support) the
+    // video.src URL must be on the user-driven white-list before a 'canplay'
+    // event will be emitted; the last video event that can be reliably
+    // listened-for when the URL is not on the white-list is 'loadedmetadata'.
+    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+      video.addEventListener('loadedmetadata', function() {
+        video.play();
+      });
+    }
+  </script>
   <script type="text/javascript">
-    let video = document.getElementById("videoStream"),
-        audioStream = video.captureStream();
+    let videoStream = document.getElementById("videoStream"),
+        audioStream = videoStream.captureStream();
   </script>
 </body>
 </html>
